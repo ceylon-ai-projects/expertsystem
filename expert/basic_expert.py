@@ -26,18 +26,22 @@ class Action:
 
 
 class BaseAbility:
+    last_action = None
 
-    def act(self, state) -> Action:
+    def act(self, state,result) -> Action:
         return None
 
     def evaluate(self, state, result):
+        pass
+
+    def status(self):
         pass
 
 
 class Expert:
     abilities = []
     last_state = None
-    strike_step = 2
+    strike_step = 1
 
     def __init__(self, strike_step=1):
         self.strike_step = strike_step
@@ -46,10 +50,10 @@ class Expert:
     def after_init(self):
         pass
 
-    def interact(self, state):
+    def interact(self, state, result):
         actions = []
         for ability in self.abilities:
-            action = ability.act(state)
+            action = ability.act(state, result)
             actions.append(action)
         self.last_state = state
         return actions, self.strike_step
@@ -58,3 +62,9 @@ class Expert:
         state = self.last_state if state is None else state
         for ability in self.abilities:
             ability.evaluate(state, result)
+
+    def status(self):
+        print("--Expert System Summary--\n\n")
+        print(f"Total abilities {len(self.abilities)}")
+        for ability in self.abilities:
+            ability.status()

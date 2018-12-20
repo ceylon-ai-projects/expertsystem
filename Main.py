@@ -8,7 +8,7 @@ from expert.basic_expert import Expert, Action
 from trading import TradeAction
 from trading_expert.trail_on_error import TrailOnErrorDecision
 
-display = False
+display = True
 
 
 class TradingExpert(Expert):
@@ -17,7 +17,7 @@ class TradingExpert(Expert):
         self.abilities.append(TrailOnErrorDecision())
 
 
-tradingExpert = TradingExpert(strike_step=4)
+tradingExpert = TradingExpert(strike_step=3)
 
 pair_name = "EURUSD"
 interval = "1.mini"
@@ -25,7 +25,7 @@ interval = "1.mini"
 dirname = os.path.dirname(__file__)
 base_path = dirname + ""
 
-df_csv = get_data_chunk(pair_name, interval, 1000)
+df_csv = get_data_chunk(pair_name, interval, 2048)
 
 risk_factor = 0.0002
 
@@ -47,6 +47,7 @@ def calculate_certainty(diff):
 
 
 def calculate_result(__states):
+    # print(states)
     f_step = __states[:1, 4:5]  # using close value
     l_step = __states[-1:, 4:5]  # using close value
 
@@ -65,6 +66,7 @@ def calculate_result(__states):
 
     # print(f_step, l_step, diff, diff > 0, calculate_certainty(diff))
     # print(__action)
+    # time.sleep(0.5)
 
     return __action
 
@@ -76,9 +78,10 @@ if __name__ == '__main__':
     for df in df_csv:
         step_count = 0
 
-        next_strike = -1
+        next_strike = 0
         states = []
         print(df.head())
+        print(tradingExpert.status())
 
         for df_row in df.values:
             df_values = df_row
@@ -88,17 +91,17 @@ if __name__ == '__main__':
             if step_count == next_strike:
                 states = np.array(states)
                 result = calculate_result(states)
-                tradingExpert.feedback(result=result, state=states)
 
-            if next_strike <= step_count:
-                action, strike_on = tradingExpert.interact(df_values)
+                # tradingExpert.feedback(result=result, state=states)
+                action, strike_on = tradingExpert.interact(states, result)
+
                 next_strike = step_count + strike_on
                 act_state = df_values
                 next_action = action
                 ## States after action taken
                 states = []
-                states.append(df_values)
+                # states.append(df_values)
 
             step_count += 1
-            if display:
-                time.sleep(0.5)
+        if display:
+            time.sleep(0.2)

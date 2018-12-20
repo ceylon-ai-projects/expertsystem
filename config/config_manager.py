@@ -10,6 +10,7 @@ dirname = os.path.dirname(__file__)
 def get_firebase_storage():
     pass
 
+
 def get_config(pair_name, interval, prefix='default'):
     prefix += '.'
     config.read("{}/{}{}.conf".format(dirname, prefix, pair_name))
