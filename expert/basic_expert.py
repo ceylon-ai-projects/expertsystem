@@ -39,6 +39,13 @@ class Expert:
     last_state = None
     strike_step = 2
 
+    def __init__(self, strike_step=1):
+        self.strike_step = strike_step
+        self.after_init()
+
+    def after_init(self):
+        pass
+
     def interact(self, state):
         actions = []
         for ability in self.abilities:
