@@ -36,8 +36,8 @@ class BaseAbility:
 
 class Expert:
     abilities = []
-
     last_state = None
+    strike_step = 2
 
     def interact(self, state):
         actions = []
@@ -45,7 +45,7 @@ class Expert:
             action = ability.act(state)
             actions.append(action)
         self.last_state = state
-        return actions
+        return actions, self.strike_step
 
     def feedback(self, result, state=None):
         state = self.last_state if state is None else state
